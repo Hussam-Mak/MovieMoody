@@ -5,14 +5,16 @@ from auth import authenticate
 from gemini_api import get_movie_recommendation
 from tmdb_api import get_movie_details
 from database import init_db, add_movie, get_watchlist, delete_watchlist
+from utelly import get_movie_provider
 
-def display_movie(movie):
+def display_movie(movie, provider):
     print("=" * 50)
     print(f"Title: {movie['title']}")
     print(f"Release Date: {movie['release_date']}")
     print(f"Rating: {movie['rating']}")
     print(f"Overview: {movie['overview']}")
     print(f"Poster: {movie['poster_url']}")
+    print(f"Provider: {provider["provider"]}")
     print("=" * 50 + "\n")
 
 def main():
@@ -39,13 +41,14 @@ def main():
 
             movie_title = recommendation.split('\n')[0].strip()
             movie_details = get_movie_details(movie_title)
+            movie_provider = get_movie_provider(movie_title)
 
-            if 'error' not in movie_details:
-                display_movie(movie_details)
+            if 'error' not in (movie_details and movie_provider):
+                display_movie(movie_details, movie_provider)
 
                 save = input("Save this movie to your watchlist? (y/n): ").strip().lower()
                 if save == 'y':
-                    add_movie(username, movie_details)
+                    add_movie(username, movie_details, movie_provider)
                     print("✅ Movie saved to watchlist!")
             else:
                 print("❌ Could not find additional movie details on TMDB.")
@@ -61,6 +64,7 @@ def main():
                     print(f"Release Date: {movie[1]}")
                     print(f"Rating: {movie[2]}")
                     print(f"Overview: {movie[3]}")
+                    print(f"Providers: {movie[4]}")
                     print("=" * 50)
             else:
                 print("\nYour watchlist is empty.")

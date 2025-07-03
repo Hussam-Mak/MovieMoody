@@ -7,22 +7,22 @@ def init_db():
     conn = sqlite3.connect('watchlist.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS watchlist
-                 (username TEXT, title TEXT, release_date TEXT, rating REAL, overview TEXT)''')
+                 (username TEXT, title TEXT, release_date TEXT, rating REAL, overview TEXT, provider TEXT)''')
     conn.commit()
     conn.close()
 
-def add_movie(username, movie):
+def add_movie(username, movie, provider):
     conn = sqlite3.connect('watchlist.db')
     c = conn.cursor()
-    c.execute('INSERT INTO watchlist VALUES (?, ?, ?, ?, ?)', 
-              (username, movie['title'], movie['release_date'], movie['rating'], movie['overview']))
+    c.execute('INSERT INTO watchlist VALUES (?, ?, ?, ?, ?, ?)', 
+              (username, movie['title'], movie['release_date'], movie['rating'], movie['overview'], provider["provider"]))
     conn.commit()
     conn.close()
 
 def get_watchlist(username):
     conn = sqlite3.connect('watchlist.db')
     c = conn.cursor()
-    c.execute('SELECT title, release_date, rating, overview FROM watchlist WHERE username = ?', (username,))
+    c.execute('SELECT title, release_date, rating, overview, provider FROM watchlist WHERE username = ?', (username,))
     movies = c.fetchall()
     conn.close()
     return movies
